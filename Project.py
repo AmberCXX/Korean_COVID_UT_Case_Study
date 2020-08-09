@@ -7,7 +7,8 @@ from sklearn import metrics
 from sklearn import tree
 import warnings 
 import graphviz
-import os
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
 
 warnings.filterwarnings("ignore")
 time = pd.read_csv("C:/Users/timot/Downloads/datasets_527325_1332417_Time.csv")
@@ -44,21 +45,21 @@ time["date"] = pd.to_datetime(time["date"].values)
 #plt.title("Confirmed vs. Deceased")
 
 
-#age = pd.read_csv("C:/Users/timot/Downloads/datasets_527325_1332417_TimeAge.csv")
+age = pd.read_csv("C:/Users/timot/Downloads/datasets_527325_1332417_TimeAge.csv")
 
-#age["date"] = pd.to_datetime(age["date"].values)
+age["date"] = pd.to_datetime(age["date"].values)
 
-#old = age[age["age"] == "80s"]
-#mid = age[age["age"] == "40s"]
-#young = age[age["age"] == "10s"]
+old = age[age["age"] == "80s"]
+mid = age[age["age"] == "40s"]
+young = age[age["age"] == "10s"]
 
-#plt.plot(old["date"],old["confirmed"], label = "Old")
-#plt.plot(mid["date"],mid["confirmed"], label = "Mid")
-#plt.plot(young["date"],young["confirmed"], label = "Young")
+plt.plot(old["date"],old["confirmed"], label = "Old")
+plt.plot(mid["date"],mid["confirmed"], label = "Mid")
+plt.plot(young["date"],young["confirmed"], label = "Young")
 
-#plt.legend()
-#plt.title("Confirmed cases from 2020-03 to 2020-07")
-#plt.xticks([])
+plt.legend()
+plt.title("Confirmed cases from 2020-03 to 2020-07")
+plt.xticks([])
 
 
 
@@ -144,32 +145,43 @@ Y,X = dmatrices("deceased~sex + age + country + province + city",subset,return_t
 
 y = Y.values
 model = LogisticRegression()
+mse = []
 
 for i in range(0,5):
     X_train,X_test,y_train,y_test = train_test_split(X,y,test_size = 0.2,random_state = i)
     result = model.fit(X_train,y_train)
     prediction = model.predict(X_test)
     print(metrics.accuracy_score(y_test,prediction))
+    mse.append(metrics.accuracy_score(y_test,prediction))
 
 weights = pd.Series(model.coef_[0],index = X.columns.values)
 
-#########################################################################
+converted = []
+for i in y_test:
+    converted.append(i[0])
+
+predicted = list(prediction)
+confusion_matrix(converted,predicted)
+
+###############################################################
     
     
 model = tree.DecisionTreeClassifier(criterion = "entropy")
+mse = []
 
-for i in range(0,5):
+for i in range(0,10):
     X_train,X_test,y_train,y_test = train_test_split(X,y,test_size = 0.2,random_state = i)
     result = model.fit(X_train,y_train)
     prediction = model.predict(X_test)
     print(metrics.accuracy_score(y_test,prediction))
-    
+    mse.append(metrics.accuracy_score(y_test,prediction))
+
+converted = []
+for i in y_test:
+    converted.append(i[0])
+
+predicted = list(prediction)
+confusion_matrix(converted,predicted)
+
 graphviz.Source(tree.export_graphviz(model,out_file = None,feature_names= X.columns.values, filled = True))
 #os.environ["PATH"] += os.pathsep + "C:/Users/timot/anaconda3/Library/bin/graphviz"
-
-
-
-
-
-
-
