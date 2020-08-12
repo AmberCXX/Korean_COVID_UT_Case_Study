@@ -8,7 +8,9 @@ from sklearn import tree
 import warnings 
 import graphviz
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import roc_curve
 import seaborn as sns
+
 
 warnings.filterwarnings("ignore")
 time = pd.read_csv("C:/Users/timot/Downloads/datasets_527325_1332417_Time.csv")
@@ -162,6 +164,13 @@ for i in y_test:
 
 predicted = list(prediction)
 confusion_matrix(converted,predicted)
+
+
+#fpr, tpr, _ = roc_curve(converted,predicted)
+
+#plt.plot([0,1],[0,1], "k--")
+#plt.plot(fpr,tpr)
+
 
 ###############################################################
     
